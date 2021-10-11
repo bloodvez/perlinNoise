@@ -1,0 +1,8 @@
+node_modules
+.cache
+.vscode
+dist
+package-lock.json
+spr
+*code-workspace
+.env
