@@ -1,39 +1,53 @@
 class Player {
     constructor() {
-      this.x = Math.floor(Math.random() * gameMap.mapArr.length);
-      this.y = Math.floor(Math.random() * gameMap.mapArr.length);
-      document.addEventListener('keydown', key => this.onKeyDown(key));
+        this.x = 1
+        this.y = 1
+
+        document.addEventListener('keydown', key => this.onKeyDown(key));
     }
 
-    pickNewPosition(){
-        this.x = Math.floor(Math.random() * gameMap.mapArr.length);
-        this.y = Math.floor(Math.random() * gameMap.mapArr.length);
+    pickNewPosition() {
+        this.x = Math.floor(Math.random() * game.width);
+        this.y = Math.floor(Math.random() * game.height);
     }
 
-    init(){
-        while (gameMap.mapArr[this.x][this.y] === 1){
+    async init() {
+        this.pickNewPosition()
+        while (!game.gameMap.mapArr.find(elem => (elem.x === this.x && elem.y === this.y)).passable) {
             this.pickNewPosition()
         }
-            gameMap.mapArr[this.x][this.y] = "P"
+    }
+
+    draw(ctx){
+        ctx.fillStyle = `rgb(120,150,170)`;
+        ctx.fillRect(this.x * game.pixelSize, this.y * game.pixelSize, game.pixelSize, game.pixelSize);
     }
 
     onKeyDown(key) {
-        let prevX = this.x
-        let prevY = this.y
+        let dir = {x:0, y:0}
         if (key.keyCode == '83') { // S
-            if(gameMap.mapArr[this.x][this.y + 1] != 1) this.y += 1
+            //this.y += 1;
+            dir.y = 1
         }
         if (key.keyCode == '87') { // W
-            if(gameMap.mapArr[this.x][this.y - 1] != 1) this.y -= 1
+            //this.y -= 1;
+            dir.y = -1
         }
-        if (key.keyCode =='68') { // D
-            if(gameMap.mapArr[this.x + 1][this.y] != 1) this.x += 1
+        if (key.keyCode == '68') { // D
+            //this.x += 1;
+            dir.x = 1
         }
         if (key.keyCode == '65') { // A
-            if(gameMap.mapArr[this.x - 1][this.y] != 1) this.x -= 1
+            //this.x -= 1;
+            dir.x = -1
         }
-        gameMap.mapArr[prevX][prevY] = 0
-        gameMap.mapArr[this.x][this.y] = "P"
-        gameMap.draw()
+
+        let target = game.gameMap.mapArr.find(elem => (elem.x === (this.x + dir.x) && elem.y === (this.y + dir.y)));
+        if(target && target.passable){
+            this.x += dir.x
+            this.y += dir.y
+        }
+        game.update()
+        game.draw()
     }
 }

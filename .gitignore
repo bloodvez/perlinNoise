@@ -6,3 +6,4 @@ package-lock.json
 spr
 *code-workspace
 .env
+*.psd
