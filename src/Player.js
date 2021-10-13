@@ -13,18 +13,18 @@ class Player {
 
     async init() {
         this.pickNewPosition()
-        while (!game.gameMap.mapArr.find(elem => (elem.x === this.x && elem.y === this.y)).passable) {
+        while (game.gameMap.mapArr.filter(elem => (elem.x === this.x && elem.y === this.y)).length > 0) {
             this.pickNewPosition()
         }
     }
 
-    draw(ctx){
+    draw() {
         ctx.fillStyle = `rgb(120,150,170)`;
         ctx.fillRect(this.x * game.pixelSize, this.y * game.pixelSize, game.pixelSize, game.pixelSize);
     }
 
     onKeyDown(key) {
-        let dir = {x:0, y:0}
+        let dir = { x: 0, y: 0 }
         if (key.keyCode == '83') { // S
             //this.y += 1;
             dir.y = 1
@@ -43,7 +43,7 @@ class Player {
         }
 
         let target = game.gameMap.mapArr.find(elem => (elem.x === (this.x + dir.x) && elem.y === (this.y + dir.y)));
-        if(target && target.passable){
+        if (!target || target.passable) {
             this.x += dir.x
             this.y += dir.y
         }

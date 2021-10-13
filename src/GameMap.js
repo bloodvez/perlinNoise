@@ -11,16 +11,17 @@ class GameMap {
     for (let x = 0; x < game.width; x++) {
       for (let y = 0; y < game.height; y++) {
         let v = Math.abs(perlin.get(x / this.scale, y / this.scale))
-        let tile = new Tile(x, y)
         if (v * this.multiplier >= this.threshold) {
-          tile.setWall()
+          this.mapArr.push(new WallTile(x, y))
         }
-        this.mapArr.push(tile)
+
       }
     }
   }
 
-  draw(ctx) {
+  draw() {
+    ctx.fillStyle = tilesSpritesheet.floor1_texture;
+    ctx.fillRect(0, 0, game.width * game.pixelSize, game.height * game.pixelSize);
     this.mapArr.forEach(elem => {
       ctx.drawImage(
         ...elem.texture,

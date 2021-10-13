@@ -14,8 +14,11 @@ class Tile extends GameObject{
         this.passable = true;
         this.texture = tilesSpritesheet.floor1
     }
+}
 
-    setWall(){
+class WallTile extends Tile{
+    constructor(x, y){
+        super(x, y)
         this.passable = false;
         this.texture = tilesSpritesheet.wall1
     }
