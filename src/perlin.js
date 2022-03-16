@@ -1,5 +1,4 @@
-'use strict';
-let perlin = {
+export let perlin = {
     rand_vect: function () {
         let theta = Math.random() * 2 * Math.PI;
         return { x: Math.cos(theta), y: Math.sin(theta) };
@@ -22,6 +21,7 @@ let perlin = {
         return a + this.smootherstep(x) * (b - a);
     },
     seed: function () {
+        console.log("perlin seed reset");
         this.gradients = {};
         this.memory = {};
     },
