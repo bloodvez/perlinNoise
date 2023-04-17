@@ -2,7 +2,7 @@ import { GameObject } from "./GameObject";
 import { ControlsManager } from "./Controls";
 import { Sprite } from "pixi.js";
 import { spriteFromSpritesheet } from "./utils";
-import { game } from "./Game";
+import { Game, game } from "./Game";
 
 class Cursor extends GameObject {
   controlsManager: ControlsManager;
@@ -18,10 +18,10 @@ class Cursor extends GameObject {
 
   update(): void {
     let points = this.controlsManager.manager.mouse.global
-    let localX = (~~(points.x/game.pixelSize))
-    let localY = (~~(points.y/game.pixelSize))
-    this.sprite.x = localX * game.pixelSize + game.pixelSize / 2
-    this.sprite.y = localY * game.pixelSize + game.pixelSize / 2
+    let localX = (~~(points.x/Game.pixelSize))
+    let localY = (~~(points.y/Game.pixelSize))
+    this.sprite.x = localX * Game.pixelSize + Game.pixelSize / 2
+    this.sprite.y = localY * Game.pixelSize + Game.pixelSize / 2
   }
 }
 

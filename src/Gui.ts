@@ -17,7 +17,7 @@ export default class Gui extends GameObject {
     this.fpsCounter.zIndex = 100;
     app.stage.addChild(this.fpsCounter);
   }
-  update(delta: number) {
-    this.fpsCounter.text = delta.toString();
+  update() {
+    // this.fpsCounter.text = delta.toString();
   }
 }

@@ -1,52 +1,68 @@
-import { Sprite } from "pixi.js";
+import Drawable from "./Drawable";
+import Entity from "./Entity";
 import { GameObject } from "./GameObject";
-import { spriteFromSpritesheet, textureFromSpritesheet } from "./utils";
+import { TileTextures } from "./interfaces";
 
-// type playerDirection = {
-//   x: number;
-//   y: number;
-//   dir: string;
-// };
+type playerDirections = "up" | "down" | "left" | "right";
 
-export default class Player extends GameObject {
-  x: number;
-  y: number;
-  sprite: Sprite;
-  //target: any;
-  //direction: playerDirection;
+const movementDirection: { current: playerDirections, previous : playerDirections } = {
+  current: "up",
+  previous: "up"
+};
+
+function handleKeyPress(key: KeyboardEvent) {
+  switch (key.code) {
+    case "KeyW":
+      movementDirection.current = "up";
+      break;
+    case "KeyS":
+      movementDirection.current = "down";
+      break;
+    case "KeyA":
+      movementDirection.current = "left";
+      break;
+    case "KeyD":
+      movementDirection.current = "right";
+      break;
+  }
+  if(movementDirection.current !== movementDirection.previous){
+    GameObject.update();
+  }
+}
+
+document.addEventListener("keydown", handleKeyPress);
+
+export default class Player extends Drawable {
+  target?: Entity;
   health: number;
   damage: number;
-  resources: any;
+  speed: number;
+  // resources: any;
+  static currentPlayer: Player | undefined = undefined;
+  static addPlayer(x: number, y: number): Player {
+    return new Player(x, y, "player01.png");
+  }
 
-  constructor(x: number, y: number) {
-    super();
-    this.x = x;
-    this.y = y;
-    this.sprite = spriteFromSpritesheet("player01.png");
-    //this.target = {};
+  constructor(x: number, y: number, texture: TileTextures) {
+    super(x, y, texture);
     //this.direction = { x: 0, y: 1, dir: "up" };
     this.health = 100;
     this.damage = 10;
-    this.resources = { gold: 0 };
-
-    //document.addEventListener("keydown", (key) => this.onKeyDown(key));
+    this.speed = 1;
+    // this.resources = { gold: 0 };
+    Player.currentPlayer = this;
   }
 
-  setTexture(texture: string) {
-    this.sprite.texture = textureFromSpritesheet(texture);
+  update(): void {
+    if (movementDirection.current === "up")
+      this.setPos(this.x, (this.y -= this.speed));
+    if (movementDirection.current === "down")
+      this.setPos(this.x, (this.y += this.speed));
+    if (movementDirection.current === "right")
+      this.setPos((this.x += this.speed), this.y);
+    if (movementDirection.current === "left")
+      this.setPos((this.x -= this.speed), this.y);
   }
-
-  setRotation(angle: number) {
-    this.sprite.rotation = (angle * Math.PI) / 180;
-  }
-
-  //   pickNewPosition() {
-  //     this.x = Math.floor(Math.random() * game.width);
-  //     this.sprite.x = this.x * PIXEL_SIZE + PIXEL_SIZE / 2;
-
-  //     this.y = Math.floor(Math.random() * game.height);
-  //     this.sprite.y = this.y * PIXEL_SIZE + PIXEL_SIZE / 2;
-  //   }
 
   //   async init() {
   //     // Checking if player spawn position is inside of a wall
@@ -115,45 +131,6 @@ export default class Player extends GameObject {
   //       }
   //       game.update();
   //       game.draw();
-  //     }
-  //   }
-
-  //   onKeyDown(key) {
-  //     switch (key.keyCode) {
-  //       case 83: // S
-  //         this.direction.x = 0;
-  //         this.direction.y = 1;
-  //         this.setRotation(180);
-  //         this.hadleControls("down");
-  //         break;
-
-  //       case 87: // W
-  //         this.direction.x = 0;
-  //         this.direction.y = -1;
-  //         this.setRotation(0);
-  //         this.hadleControls("up");
-  //         break;
-
-  //       case 68: // D
-  //         this.direction.x = 1;
-  //         this.direction.y = 0;
-  //         this.setRotation(90);
-  //         this.hadleControls("right");
-  //         break;
-
-  //       case 65: // A
-  //         this.direction.x = -1;
-  //         this.direction.y = 0;
-  //         this.setRotation(270);
-  //         this.hadleControls("left");
-  //         break;
-
-  //       case 32: // Space
-  //         this.hadleAction();
-  //         break;
-  //       default:
-  //         //console.log(key.keyCode);
-  //         break;
   //     }
   //   }
 }

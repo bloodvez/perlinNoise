@@ -2,51 +2,50 @@ const GAME_WIDTH: number = 32;
 const GAME_HEIGHT: number = 24;
 const PIXEL_SIZE: number = 24;
 
-import { Application, TilingSprite, Loader } from "pixi.js";
+import { Application as PIXIApp, TilingSprite, Loader } from "pixi.js";
 import { ControlsManager } from "./Controls";
-import Cursor from "./Cursor";
+// import Cursor from "./Cursor";
+import GameMap from "./GameMap";
 import { GameObject } from "./GameObject";
 import Gui from "./Gui";
+import { IGame } from "./interfaces";
+import Player from "./Player";
 // import GameMap from "./GameMap";
-import Tile from "./Tile";
 import { textureFromSpritesheet } from "./utils";
 // import Player from "./Player";
 // import { perlin } from "./perlin";
 
-export class Game {
-  width: number;
-  height: number;
-  pixelSize: number;
-  // gameMap: GameMap;
-  loaded: boolean;
-  // player: Player;
-  app: Application;
-  controlsManager: ControlsManager;
-  gui : Gui | undefined
-
-  constructor(width: number, height: number, pixelSize: number) {
-    this.width = width;
-    this.height = height;
-    this.pixelSize = pixelSize;
+export class Game implements IGame {
+  constructor() {
+    const gameWindow = document.getElementById("gameWindow");
+    if (!gameWindow) throw new Error("no gameWindow div");
     const canvas = document.createElement("canvas");
-    this.app = new Application({
+    this.app = new PIXIApp({
       view: canvas,
       width: GAME_WIDTH * PIXEL_SIZE,
       height: GAME_HEIGHT * PIXEL_SIZE,
       antialias: false,
     });
-    const gameWindow: any = document.getElementById("gameWindow");
     gameWindow.appendChild(this.app.view);
 
-    // this.gameMap = new GameMap();
+    this.gameMap = new GameMap();
     this.loaded = false;
     this.controlsManager = new ControlsManager(this.app.renderer);
     this.app.stage.interactive = true;
     this.app.stage.sortableChildren = true;
-    this.app.ticker.maxFPS = 16
-    this.app.ticker.add(GameObject.update)
+    this.app.ticker.maxFPS = 30;
+    // this.app.ticker.add(GameObject.update);
     //new Gui(this.app)
   }
+  static width: number = GAME_WIDTH;
+  static height: number = GAME_HEIGHT;
+  static pixelSize: number = PIXEL_SIZE;
+  gameMap: GameMap;
+  loaded: boolean;
+  player?: Player | undefined;
+  app: PIXIApp;
+  controlsManager: ControlsManager;
+  gui?: Gui;
 
   load() {
     this.app.loader.add({
@@ -64,27 +63,27 @@ export class Game {
 
   async init() {
     this.addBackground();
-    new Tile(0, 0, "red.png");
-    new Cursor(this.controlsManager)
+    //new Cursor(this.controlsManager)
     // await this.gameMap.generateMap(7.77, 70, 13);
-    // this.player = new Player(0, 0);
+    this.player = Player.addPlayer(1, 10);
     // await this.player.init();
     // this.draw();
+
     // this.app.ticker.add((delta) => {
-    //   this.update(delta);
+    //   GameObject.update(delta);
     // });
   }
 
-  // async addPlayer() {
-  //   this.player = new Player(0, 0);
-  //   await this.player.init();
+  // addPlayer() {
+  //   this.player = new Player(10, 5, "player01.png");
+  //   // await this.player.init();
   // }
 
   addBackground() {
     const tilingSprite = new TilingSprite(
       textureFromSpritesheet("floor01.png"),
-      this.app.screen.width * this.pixelSize,
-      this.app.screen.height * this.pixelSize
+      this.app.screen.width * Game.pixelSize,
+      this.app.screen.height * Game.pixelSize
     );
     this.app.stage.addChild(tilingSprite);
     tilingSprite.zIndex = -10;
@@ -108,6 +107,6 @@ export class Game {
   // }
 }
 
-export const game = new Game(GAME_WIDTH, GAME_HEIGHT, PIXEL_SIZE);
+export const game = new Game();
 
 export let resources: Loader["resources"];

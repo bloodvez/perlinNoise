@@ -1,16 +1,15 @@
 export class GameObject {
-  static gameObjects: GameObject[] = [];
+  private static gameObjects: GameObject[] = [];
 
   constructor() {
     GameObject.gameObjects.push(this);
   }
 
-  static update(delta:number | undefined): void {
-		GameObject.gameObjects.forEach((elem:GameObject) => elem.update(delta));
-	}
-  update(delta:number | undefined){
-
+  static update(): void {
+    GameObject.gameObjects.forEach((elem: GameObject) => elem.update());
   }
+
+  update() {}
 }
 
 // @ts-ignore

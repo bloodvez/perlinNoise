@@ -1,16 +1,10 @@
-import Entity from "./Entity";
+import Drawable from "./Drawable";
+import { TileTextures } from "./interfaces";
 
-export default class Tile extends Entity {
+export default class Tile extends Drawable {
     passable : boolean;
-    constructor(x: number, y:number, texture:string) {
+    constructor(x: number, y:number, texture:TileTextures) {
       super(x, y, texture);
       this.passable = true;
     }
-  
-    // destroy() {
-    //   const idx = game.gameMap.mapArr.indexOf(this);
-    //   game.gameMap.mapArr.splice(idx, 1);
-    //   app.stage.removeChild(this.sprite);
-    //   this.sprite.destroy();
-    // }
   }
