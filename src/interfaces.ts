@@ -5,14 +5,13 @@ import Gui from "./Gui";
 import Player from "./Player";
 
 export interface IGame {
-  gameMap: GameMap;
+  gameMap?: GameMap;
   loaded: boolean;
   player?: Player;
   app: Application;
   controlsManager: ControlsManager;
   gui?: Gui;
   load(): void;
-  addBackground(): void;
   init(): void;
 }
 

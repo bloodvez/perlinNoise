@@ -1,19 +1,16 @@
-import Entity from "./Entity";
-import { Game, game } from "./Game";
-import { GameObject } from "./GameObject";
+import { GAME_HEIGHT, GAME_WIDTH } from "./Constants";
+import Tile from "./Tile";
 import { perlin } from "./perlin";
-import WallTile from "./WallTile";
 
-export default class GameMap extends GameObject {
-  mapArr: Array<Entity>;
-
-  constructor() {
-    super();
-    this.mapArr = [];
-  }
-
+export default class GameMap {
+  static collisionMap: Array<Array<null | Tile>> = Array(GAME_WIDTH)
+    .fill(null)
+    .map(() => Array(GAME_HEIGHT).fill(null));
+  // static collisionMap: boolean[][] = Array(GAME_WIDTH)
+  //   .fill(false)
+  //   .map(() => Array(GAME_HEIGHT).fill(false));
   // Generate map using perlin noise
-  async generateMap(scale = 7.77, multiplier = 70, threshold = 13) {
+  static generateMap(scale = 7.77, multiplier = 70, threshold = 13): void {
     if (scale <= 1) {
       console.log("Scale cannot be lower than 1");
       scale = 1.1;
@@ -21,13 +18,13 @@ export default class GameMap extends GameObject {
     console.log(
       `Generating map with scale:${scale}, multiplier:${multiplier}, threshold:${threshold}`
     );
-    for (let x = 0; x < Game.width; x++) {
-      for (let y = 0; y < Game.height; y++) {
+
+    for (let x = 0; x < GAME_WIDTH; x++) {
+      for (let y = 0; y < GAME_HEIGHT; y++) {
         let v = Math.abs(perlin.get(x / scale, y / scale));
         if (v * multiplier >= threshold) {
-          //let newTile = game.createGameObject(x, y)
-          //   this.mapArr.push(new WallTile(0, 0, "wall01.png"));
-          new WallTile(x, y, "wall01.png");
+          const newTile = new Tile(x, y, "wall01.png", false);
+          this.collisionMap[x][y] = newTile;
         }
       }
     }

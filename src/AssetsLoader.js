@@ -10,7 +10,7 @@ assetsFileInput.addEventListener('change', (e) => {
             console.log("Loaded spritesheet JSON");
         } else if (elem.name === "spritesheet.png") {
             const imageBitmapPromise = await createImageBitmap(elem);
-            let fooTex = PIXI.Texture.from(imageBitmapPromise);
+            const fooTex = PIXI.Texture.from(imageBitmapPromise);
             const sheet = new PIXI.Spritesheet(fooTex, JSON.parse(spritesheetJSON), 'spritesheet.json')
             sheet._processFrames(0)
             sheet._processAnimations()

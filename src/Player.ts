@@ -1,43 +1,59 @@
+import { GAME_HEIGHT, GAME_WIDTH } from "./Constants";
 import Drawable from "./Drawable";
-import Entity from "./Entity";
+import GameMap from "./GameMap";
 import { GameObject } from "./GameObject";
+import Tile from "./Tile";
 import { TileTextures } from "./interfaces";
 
 type playerDirections = "up" | "down" | "left" | "right";
 
-const movementDirection: { current: playerDirections, previous : playerDirections } = {
-  current: "up",
-  previous: "up"
+const movementDirection: {
+  current?: playerDirections;
+  previous: playerDirections;
+} = {
+  current: undefined,
+  previous: "up",
 };
 
 function handleKeyPress(key: KeyboardEvent) {
   switch (key.code) {
     case "KeyW":
       movementDirection.current = "up";
+      Player.currentPlayer?.setRotation(0);
       break;
     case "KeyS":
       movementDirection.current = "down";
+      Player.currentPlayer?.setRotation(180);
       break;
     case "KeyA":
       movementDirection.current = "left";
+      Player.currentPlayer?.setRotation(270);
       break;
     case "KeyD":
       movementDirection.current = "right";
+      Player.currentPlayer?.setRotation(90);
+      break;
+    case "Space":
+      Player.currentPlayer?.updateTargetCoords();
+      const target = Player.currentPlayer?.whatsInFront();
+      console.log(target);
       break;
   }
-  if(movementDirection.current !== movementDirection.previous){
+  if (!movementDirection.current) return;
+
+  if (movementDirection.current === movementDirection.previous) {
     GameObject.update();
+    movementDirection.previous = movementDirection.current!;
+    movementDirection.current = undefined;
+    return;
   }
+  movementDirection.previous = movementDirection.current!;
+  movementDirection.current = undefined;
 }
 
-document.addEventListener("keydown", handleKeyPress);
-
 export default class Player extends Drawable {
-  target?: Entity;
   health: number;
-  damage: number;
-  speed: number;
-  // resources: any;
+  targetCoord: { x: number; y: number };
   static currentPlayer: Player | undefined = undefined;
   static addPlayer(x: number, y: number): Player {
     return new Player(x, y, "player01.png");
@@ -45,92 +61,53 @@ export default class Player extends Drawable {
 
   constructor(x: number, y: number, texture: TileTextures) {
     super(x, y, texture);
-    //this.direction = { x: 0, y: 1, dir: "up" };
     this.health = 100;
-    this.damage = 10;
-    this.speed = 1;
-    // this.resources = { gold: 0 };
+    this.targetCoord = { x: this.x, y: this.y + 1 };
     Player.currentPlayer = this;
+    document.addEventListener("keydown", handleKeyPress);
   }
 
   update(): void {
-    if (movementDirection.current === "up")
-      this.setPos(this.x, (this.y -= this.speed));
-    if (movementDirection.current === "down")
-      this.setPos(this.x, (this.y += this.speed));
-    if (movementDirection.current === "right")
-      this.setPos((this.x += this.speed), this.y);
-    if (movementDirection.current === "left")
-      this.setPos((this.x -= this.speed), this.y);
+    this.updateTargetCoords();
+    const target = this.whatsInFront();
+    if (target === null || target?.passable) {
+      this.setPos(this.targetCoord.x, this.targetCoord.y);
+      return;
+    }
+    if (target?.passable === false) {
+      this.setPos(this.x, this.y);
+    }
   }
 
-  //   async init() {
-  //     // Checking if player spawn position is inside of a wall
-  //     // if so, pick new position
-  //     this.pickNewPosition();
-  //     while (
-  //       game.gameMap.mapArr.filter(
-  //         (elem) => elem.x === this.x && elem.y === this.y
-  //       ).length > 0
-  //     ) {
-  //       this.pickNewPosition();
-  //     }
-  //   }
+  destroy(): void {
+    super.destroy();
+    document.removeEventListener("keydown", handleKeyPress);
+  }
 
-  //   whatsInFront() {
-  //     this.target = game.gameMap.mapArr.find(
-  //       (elem) =>
-  //         elem.x === this.x + this.direction.x &&
-  //         elem.y === this.y + this.direction.y
-  //     );
-  //   }
+  updateTargetCoords(): void {
+    this.targetCoord.x =
+      movementDirection.previous === "right"
+        ? this.x + 1
+        : movementDirection.previous === "left"
+        ? this.x - 1
+        : this.x;
 
-  //   hadleControls(newDir) {
-  //     // Find what's in front of a player
-  //     this.whatsInFront();
-  //     // If it's undefined, that means it's an empty space (most likely)
-  //     if (!this.target) {
-  //       this.target = {
-  //         x: this.x + this.direction.x,
-  //         y: this.y + this.direction.y,
-  //         passable: true,
-  //       };
-  //     }
-  //     // If the player can walk through it, and the same directional
-  //     // button is pressed, then move the player
-  //     if (this.target.passable && this.direction.dir === newDir) {
-  //       this.sprite.x += this.direction.x * PIXEL_SIZE;
-  //       this.x += this.direction.x;
+    this.targetCoord.y =
+      movementDirection.previous === "down"
+        ? this.y + 1
+        : movementDirection.previous === "up"
+        ? this.y - 1
+        : this.y;
+  }
 
-  //       this.sprite.y += this.direction.y * PIXEL_SIZE;
-  //       this.y += this.direction.y;
-
-  //       this.direction.dir = newDir;
-
-  //       this.whatsInFront();
-
-  //       game.update();
-  //       game.draw();
-  //     } else {
-  //       // If not, rotate the player
-  //       this.direction.dir = newDir;
-  //       this.whatsInFront();
-  //       game.draw();
-  //     }
-  //   }
-
-  //   hadleAction() {
-  //     if (this.target) {
-  //       this.target.health -= 10;
-  //       if (this.target.health <= 0) {
-  //         if (this.target.resources) {
-  //           merge(this.target.resources, this.resources);
-  //         }
-  //         this.target.destroy();
-  //         this.target = undefined;
-  //       }
-  //       game.update();
-  //       game.draw();
-  //     }
-  //   }
+  whatsInFront(): Tile | null {
+    if (
+      this.targetCoord.x < 0 ||
+      this.targetCoord.x >= GAME_WIDTH ||
+      this.targetCoord.y < 0 ||
+      this.targetCoord.y >= GAME_HEIGHT
+    )
+      return null;
+    return GameMap.collisionMap[this.targetCoord.x][this.targetCoord.y];
+  }
 }
