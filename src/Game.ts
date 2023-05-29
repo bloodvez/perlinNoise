@@ -5,8 +5,10 @@ import Gui from "./Gui";
 import { IGame } from "./interfaces";
 import Player from "./Player";
 import { GAME_HEIGHT, GAME_WIDTH, PIXEL_SIZE } from "./Constants";
-import { containerNames, mainContainer } from "./Containers";
+import { containerNames, MainContainer, GuiContainer } from "./Containers";
 import GameMap from "./GameMap";
+import { Engine, World } from "matter-js";
+import { GameObject } from "./GameObject";
 
 export class Game implements IGame {
   gameContainers: Map<containerNames, Container> = new Map();
@@ -15,8 +17,15 @@ export class Game implements IGame {
   app: PIXIApp;
   controlsManager: ControlsManager;
   gui?: Gui;
+  world: World;
 
   constructor() {
+    // matter
+    const engine = Engine.create()
+    this.world = engine.world
+    engine.gravity.scale = 0;
+
+    //PIXI
     const gameWindow = document.getElementById("gameWindow");
     if (!gameWindow) throw new Error("no gameWindow div");
     const canvas = document.createElement("canvas");
@@ -30,8 +39,12 @@ export class Game implements IGame {
     this.controlsManager = new ControlsManager(this.app.renderer);
     this.app.stage.interactive = true;
     this.app.stage.sortableChildren = true;
-    this.app.ticker.maxFPS = 30;
-    //new Gui(this.app)
+    this.app.ticker.maxFPS = 60;
+    // Use PIXI's ticker to update matter
+    this.app.ticker.add((delta) => {
+      Engine.update(engine, delta);
+      GameObject.update();
+    })
   }
 
   load() {
@@ -50,30 +63,15 @@ export class Game implements IGame {
   }
 
   init() {
-    const mainGameContainer = mainContainer();
-    this.app.stage.addChild(mainGameContainer);
+    const mainGameContainer = MainContainer();
+    const guiContainer = GuiContainer()
+    this.app.stage.addChild(mainGameContainer, guiContainer);
     this.gameContainers.set("mainContainer", mainGameContainer);
+    this.gameContainers.set("giuContainer", guiContainer);
     //new Cursor(this.controlsManager)
-    GameMap.generateMap();
-    this.player = Player.addPlayer(1, 10);
-
-    // this.app.ticker.add((delta) => {
-    //   GameObject.update(delta);
-    // });
+    // GameMap.generateMap();
+    this.player = Player.addPlayer(100, 100);
   }
-
-  //   restart() {
-  //     perlin.seed();
-  //     this.init();
-  //   }
-
-  // update(delta: any) {
-  //   this.gameObjects.forEach((elem) => elem.update(delta));
-  // }
-
-  // draw() {
-  //   Gui.draw()
-  // }
 }
 
 export const game = new Game();

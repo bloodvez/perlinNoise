@@ -34,9 +34,15 @@ function handleKeyPress(key: KeyboardEvent) {
       Player.currentPlayer?.setRotation(90);
       break;
     case "Space":
-      Player.currentPlayer?.updateTargetCoords();
-      const target = Player.currentPlayer?.whatsInFront();
-      console.log(target);
+      // Player.currentPlayer?.updateTargetCoords();
+      if (Player.currentPlayer) {
+        // Player.currentPlayer.health -= 10;
+        Player.currentPlayer.hitbox.velocity.x = 1;
+        console.log(Player.currentPlayer.hitbox.velocity.x);
+        
+      }
+      // const target = Player.currentPlayer?.whatsInFront();
+      // console.log(target);
       break;
   }
   if (!movementDirection.current) return;
@@ -62,52 +68,52 @@ export default class Player extends Drawable {
   constructor(x: number, y: number, texture: TileTextures) {
     super(x, y, texture);
     this.health = 100;
-    this.targetCoord = { x: this.x, y: this.y + 1 };
+    this.targetCoord = { x: this.hitbox.position.x, y: this.hitbox.position.y + 1 };
     Player.currentPlayer = this;
     document.addEventListener("keydown", handleKeyPress);
   }
 
-  update(): void {
-    this.updateTargetCoords();
-    const target = this.whatsInFront();
-    if (target === null || target?.passable) {
-      this.setPos(this.targetCoord.x, this.targetCoord.y);
-      return;
-    }
-    if (target?.passable === false) {
-      this.setPos(this.x, this.y);
-    }
-  }
+  // update(): void {
+    // this.updateTargetCoords();
+    // const target = this.whatsInFront();
+    // if (target === null || target?.passable) {
+    //   this.setPos(this.targetCoord.x, this.targetCoord.y);
+    //   return;
+    // }
+    // if (target?.passable === false) {
+    //   this.setPos(this.x, this.y);
+    // }
+  // }
 
   destroy(): void {
     super.destroy();
-    document.removeEventListener("keydown", handleKeyPress);
+    // document.removeEventListener("keydown", handleKeyPress);
   }
 
-  updateTargetCoords(): void {
-    this.targetCoord.x =
-      movementDirection.previous === "right"
-        ? this.x + 1
-        : movementDirection.previous === "left"
-        ? this.x - 1
-        : this.x;
+//   updateTargetCoords(): void {
+//     this.targetCoord.x =
+//       movementDirection.previous === "right"
+//         ? this.x + 1
+//         : movementDirection.previous === "left"
+//         ? this.x - 1
+//         : this.x;
 
-    this.targetCoord.y =
-      movementDirection.previous === "down"
-        ? this.y + 1
-        : movementDirection.previous === "up"
-        ? this.y - 1
-        : this.y;
-  }
+//     this.targetCoord.y =
+//       movementDirection.previous === "down"
+//         ? this.y + 1
+//         : movementDirection.previous === "up"
+//         ? this.y - 1
+//         : this.y;
+//   }
 
-  whatsInFront(): Tile | null {
-    if (
-      this.targetCoord.x < 0 ||
-      this.targetCoord.x >= GAME_WIDTH ||
-      this.targetCoord.y < 0 ||
-      this.targetCoord.y >= GAME_HEIGHT
-    )
-      return null;
-    return GameMap.collisionMap[this.targetCoord.x][this.targetCoord.y];
-  }
+//   whatsInFront(): Tile | null {
+//     if (
+//       this.targetCoord.x < 0 ||
+//       this.targetCoord.x >= GAME_WIDTH ||
+//       this.targetCoord.y < 0 ||
+//       this.targetCoord.y >= GAME_HEIGHT
+//     )
+//       return null;
+//     return GameMap.collisionMap[this.targetCoord.x][this.targetCoord.y];
+//   }
 }

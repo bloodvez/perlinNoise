@@ -1,6 +1,6 @@
 import { Container, Text } from "pixi.js";
 
-export function menuContainer(): Container {
+export function MenuContainer(): Container {
   const container = new Container();
   const text = new Text("This is a PixiJS text", {
     fontFamily: "Arial",

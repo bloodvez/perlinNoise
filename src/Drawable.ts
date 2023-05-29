@@ -11,6 +11,8 @@ export default class Drawable extends Entity {
   constructor(x: number, y: number, texture: TileTextures) {
     super(x, y);
     this.sprite = spriteFromSpritesheet(texture);
+    this.sprite.x = this.hitbox.position.x;
+    this.sprite.y = this.hitbox.position.y;
     game.gameContainers.get("mainContainer")?.addChild(this.sprite);
     this.setPos(x, y);
   }
@@ -23,15 +25,14 @@ export default class Drawable extends Entity {
     this.sprite.rotation = (angle * Math.PI) / 180;
   }
 
-  setPos(x: number, y: number): void {
-    super.setPos(x, y);
-    this.sprite.x = this.x * PIXEL_SIZE + PIXEL_SIZE / 2;
-    this.sprite.y = this.y * PIXEL_SIZE + PIXEL_SIZE / 2;
-  }
-
   destroy(): void {
     super.destroy();
     game.gameContainers.get("mainContainer")?.removeChild(this.sprite);
     this.sprite.destroy();
+  }
+
+  update(): void {
+    this.sprite.x = this.hitbox.position.x;
+    this.sprite.y = this.hitbox.position.y;
   }
 }

@@ -2,13 +2,25 @@
 <html lang="en">
 
 <head>
-	<script type="module" src="./bundle.js"></script>
+<script type="module" src="./bundle.js"></script>
+	<style>
+		body{background-color: #1f1f1f;}
+
+		.gameContainer{
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			flex-direction: column;
+		}
+	</style>
 </head>
 
 <body>
-	<div id=gameWindow></div>
-	<div id="guiDiv"></div>
-	<input type="file" id="assetsFileInput" multiple>
+	<div class="gameContainer">
+		<div id=gameWindow></div>
+		<input type="file" id="assetsFileInput" multiple>
+		<button id="testBtn">test</button>
+	</div>
 </body>
 
 </html>

@@ -1,1 +1,1 @@
-export type containerNames = "mainContainer" | "menuContainer";
+export type containerNames = "mainContainer" | "menuContainer" | "giuContainer";
