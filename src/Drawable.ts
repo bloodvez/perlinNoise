@@ -1,16 +1,21 @@
 import { Sprite } from "pixi.js";
-import Entity from "./Entity";
+import Entity, { bodyTypes } from "./Entity";
 import { game } from "./Game";
 import { TileTextures } from "./interfaces";
 import { spriteFromSpritesheet, textureFromSpritesheet } from "./utils";
-import { PIXEL_SIZE } from "./Constants";
 
 export default class Drawable extends Entity {
   sprite: Sprite;
 
-  constructor(x: number, y: number, texture: TileTextures) {
-    super(x, y);
+  constructor(
+    x: number,
+    y: number,
+    bodyType: bodyTypes,
+    texture: TileTextures
+  ) {
+    super(x, y, bodyType);
     this.sprite = spriteFromSpritesheet(texture);
+    this.sprite.anchor.set(0);
     this.sprite.x = this.hitbox.position.x;
     this.sprite.y = this.hitbox.position.y;
     game.gameContainers.get("mainContainer")?.addChild(this.sprite);
@@ -31,8 +36,9 @@ export default class Drawable extends Entity {
     this.sprite.destroy();
   }
 
-  update(): void {
+  update(delta: number): void {
     this.sprite.x = this.hitbox.position.x;
     this.sprite.y = this.hitbox.position.y;
+    // this.sprite.rotation = this.hitbox.angle;
   }
 }

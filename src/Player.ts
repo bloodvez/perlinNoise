@@ -1,119 +1,84 @@
-import { GAME_HEIGHT, GAME_WIDTH } from "./Constants";
+import { Body } from "matter-js";
 import Drawable from "./Drawable";
-import GameMap from "./GameMap";
-import { GameObject } from "./GameObject";
-import Tile from "./Tile";
 import { TileTextures } from "./interfaces";
 
-type playerDirections = "up" | "down" | "left" | "right";
-
-const movementDirection: {
-  current?: playerDirections;
-  previous: playerDirections;
-} = {
-  current: undefined,
-  previous: "up",
+const playerDirection = {
+  up: false,
+  down: false,
+  left: false,
+  right: false,
 };
 
-function handleKeyPress(key: KeyboardEvent) {
+function handleKeyDown(key: KeyboardEvent) {
+  if (key.repeat) return;
   switch (key.code) {
     case "KeyW":
-      movementDirection.current = "up";
-      Player.currentPlayer?.setRotation(0);
+      playerDirection.up = true;
       break;
     case "KeyS":
-      movementDirection.current = "down";
-      Player.currentPlayer?.setRotation(180);
+      playerDirection.down = true;
       break;
     case "KeyA":
-      movementDirection.current = "left";
-      Player.currentPlayer?.setRotation(270);
+      playerDirection.left = true;
       break;
     case "KeyD":
-      movementDirection.current = "right";
-      Player.currentPlayer?.setRotation(90);
-      break;
-    case "Space":
-      // Player.currentPlayer?.updateTargetCoords();
-      if (Player.currentPlayer) {
-        // Player.currentPlayer.health -= 10;
-        Player.currentPlayer.hitbox.velocity.x = 1;
-        console.log(Player.currentPlayer.hitbox.velocity.x);
-        
-      }
-      // const target = Player.currentPlayer?.whatsInFront();
-      // console.log(target);
+      playerDirection.right = true;
       break;
   }
-  if (!movementDirection.current) return;
+}
 
-  if (movementDirection.current === movementDirection.previous) {
-    GameObject.update();
-    movementDirection.previous = movementDirection.current!;
-    movementDirection.current = undefined;
-    return;
+function handleKeyUp(key: KeyboardEvent) {
+  if (key.repeat) return;
+  switch (key.code) {
+    case "KeyW":
+      playerDirection.up = false;
+      break;
+    case "KeyS":
+      playerDirection.down = false;
+      break;
+    case "KeyA":
+      playerDirection.left = false;
+      break;
+    case "KeyD":
+      playerDirection.right = false;
+      break;
   }
-  movementDirection.previous = movementDirection.current!;
-  movementDirection.current = undefined;
+}
+
+function handlePhysics(player: Player, delta: number) {
+  const vector = { x: 0, y: 0 };
+  if (playerDirection.up) vector.y -= player.speed * delta;
+  if (playerDirection.down) vector.y += player.speed * delta;
+  if (playerDirection.left) vector.x -= player.speed * delta;
+  if (playerDirection.right) vector.x += player.speed * delta;
+
+  Body.applyForce(player.hitbox, player.hitbox.position, vector);
 }
 
 export default class Player extends Drawable {
   health: number;
-  targetCoord: { x: number; y: number };
+  speed: number = 0.2;
   static currentPlayer: Player | undefined = undefined;
   static addPlayer(x: number, y: number): Player {
     return new Player(x, y, "player01.png");
   }
 
   constructor(x: number, y: number, texture: TileTextures) {
-    super(x, y, texture);
+    super(x, y, "circle", texture);
     this.health = 100;
-    this.targetCoord = { x: this.hitbox.position.x, y: this.hitbox.position.y + 1 };
     Player.currentPlayer = this;
-    document.addEventListener("keydown", handleKeyPress);
+    document.addEventListener("keydown", handleKeyDown);
+    document.addEventListener("keyup", handleKeyUp);
   }
 
-  // update(): void {
-    // this.updateTargetCoords();
-    // const target = this.whatsInFront();
-    // if (target === null || target?.passable) {
-    //   this.setPos(this.targetCoord.x, this.targetCoord.y);
-    //   return;
-    // }
-    // if (target?.passable === false) {
-    //   this.setPos(this.x, this.y);
-    // }
-  // }
+  update(delta: number) {
+    handlePhysics(this, delta);
+    super.update(delta);
+  }
 
   destroy(): void {
     super.destroy();
-    // document.removeEventListener("keydown", handleKeyPress);
+    document.removeEventListener("keydown", handleKeyDown);
+    document.removeEventListener("keydown", handleKeyUp);
   }
-
-//   updateTargetCoords(): void {
-//     this.targetCoord.x =
-//       movementDirection.previous === "right"
-//         ? this.x + 1
-//         : movementDirection.previous === "left"
-//         ? this.x - 1
-//         : this.x;
-
-//     this.targetCoord.y =
-//       movementDirection.previous === "down"
-//         ? this.y + 1
-//         : movementDirection.previous === "up"
-//         ? this.y - 1
-//         : this.y;
-//   }
-
-//   whatsInFront(): Tile | null {
-//     if (
-//       this.targetCoord.x < 0 ||
-//       this.targetCoord.x >= GAME_WIDTH ||
-//       this.targetCoord.y < 0 ||
-//       this.targetCoord.y >= GAME_HEIGHT
-//     )
-//       return null;
-//     return GameMap.collisionMap[this.targetCoord.x][this.targetCoord.y];
-//   }
 }

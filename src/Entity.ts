@@ -1,16 +1,25 @@
 import { Bodies, Body, Composite } from "matter-js";
-import { GAME_HEIGHT, GAME_WIDTH } from "./Constants";
+import { GAME_WIDTH, PIXEL_SIZE } from "./Constants";
 import { GameObject } from "./GameObject";
 import { game } from "./Game";
+
+export type bodyTypes = "rectangle" | "circle";
 
 export default class Entity extends GameObject {
   hitbox: Body;
 
-  constructor(x: number, y: number) {
+  constructor(x: number, y: number, bodyType: bodyTypes) {
     super();
-    const hitbox = Bodies.rectangle(x, y, GAME_WIDTH, GAME_HEIGHT);
-    this.hitbox = hitbox;
-    Composite.add(game.world, hitbox);
+    switch (bodyType) {
+      case "rectangle":
+        this.hitbox = Bodies.rectangle(x, y, PIXEL_SIZE, PIXEL_SIZE);
+        break;
+      case "circle":
+        this.hitbox = Bodies.circle(x, y, PIXEL_SIZE / 2);
+        break;
+    }
+    this.hitbox.frictionAir = 1;
+    Composite.add(game.world, this.hitbox);
   }
 
   setPos(x: number, y: number): void {

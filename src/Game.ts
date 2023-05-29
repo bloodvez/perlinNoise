@@ -20,9 +20,9 @@ export class Game implements IGame {
   world: World;
 
   constructor() {
-    // matter
-    const engine = Engine.create()
-    this.world = engine.world
+    // matter.js
+    const engine = Engine.create();
+    this.world = engine.world;
     engine.gravity.scale = 0;
 
     //PIXI
@@ -40,11 +40,11 @@ export class Game implements IGame {
     this.app.stage.interactive = true;
     this.app.stage.sortableChildren = true;
     this.app.ticker.maxFPS = 60;
-    // Use PIXI's ticker to update matter
+    // Use PIXI's ticker to update matter.js
     this.app.ticker.add((delta) => {
       Engine.update(engine, delta);
-      GameObject.update();
-    })
+      GameObject.update(delta);
+    });
   }
 
   load() {
@@ -64,12 +64,12 @@ export class Game implements IGame {
 
   init() {
     const mainGameContainer = MainContainer();
-    const guiContainer = GuiContainer()
+    const guiContainer = GuiContainer();
     this.app.stage.addChild(mainGameContainer, guiContainer);
     this.gameContainers.set("mainContainer", mainGameContainer);
     this.gameContainers.set("giuContainer", guiContainer);
     //new Cursor(this.controlsManager)
-    // GameMap.generateMap();
+    GameMap.generateMap();
     this.player = Player.addPlayer(100, 100);
   }
 }

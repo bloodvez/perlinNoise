@@ -10,11 +10,11 @@ export class GameObject {
     id++;
   }
 
-  static update(): void {
-    GameObject.gameObjects.forEach((elem: GameObject) => elem.update());
+  static update(delta: number): void {
+    GameObject.gameObjects.forEach((elem: GameObject) => elem.update(delta));
   }
 
-  update(): void {}
+  update(delta: number): void {}
 
   destroy(): void {
     GameObject.gameObjects.delete(this.id);
