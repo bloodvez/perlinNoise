@@ -17,7 +17,7 @@ export default class GameMap {
       for (let y = 0; y < GAME_HEIGHT; y++) {
         let v = Math.abs(perlin.get(x / scale, y / scale));
         if (v * multiplier >= threshold) {
-          new Tile(x * PIXEL_SIZE, y * PIXEL_SIZE, "wall01.png", false);
+          new Tile(x * PIXEL_SIZE, y * PIXEL_SIZE, "wall01.png", true);
         }
       }
     }

@@ -15,6 +15,8 @@ export interface IGame {
   init(): void;
 }
 
+export type bodyTypes = "rectangle" | "circle";
+
 export type TileTextures =
   | "blue.png"
   | "floor01.png"

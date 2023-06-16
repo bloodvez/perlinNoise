@@ -69,7 +69,7 @@ export class Game implements IGame {
     this.gameContainers.set("mainContainer", mainGameContainer);
     this.gameContainers.set("giuContainer", guiContainer);
     //new Cursor(this.controlsManager)
-    GameMap.generateMap();
+    // GameMap.generateMap();
     this.player = Player.addPlayer(100, 100);
   }
 }

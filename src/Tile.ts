@@ -9,4 +9,6 @@ export default class Tile extends Drawable {
     Body.setStatic(this.hitbox, true);
     this.passable = passable;
   }
+
+  update(delta: number): void {}
 }

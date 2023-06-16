@@ -1,7 +1,7 @@
 import { Sprite } from "pixi.js";
-import Entity, { bodyTypes } from "./Entity";
+import Entity from "./Entity";
 import { game } from "./Game";
-import { TileTextures } from "./interfaces";
+import { TileTextures, bodyTypes } from "./interfaces";
 import { spriteFromSpritesheet, textureFromSpritesheet } from "./utils";
 
 export default class Drawable extends Entity {

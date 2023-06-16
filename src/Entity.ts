@@ -2,8 +2,7 @@ import { Bodies, Body, Composite } from "matter-js";
 import { GAME_WIDTH, PIXEL_SIZE } from "./Constants";
 import { GameObject } from "./GameObject";
 import { game } from "./Game";
-
-export type bodyTypes = "rectangle" | "circle";
+import { bodyTypes } from "./interfaces";
 
 export default class Entity extends GameObject {
   hitbox: Body;
